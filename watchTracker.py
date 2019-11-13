@@ -23,16 +23,28 @@ def getInfo(URL):
     soup = BeautifulSoup(page.content, 'html.parser')
     brand = soup.find(class_=('prods_brand')).get_text()
     model = soup.find(class_=('prods_series')).get_text()
-    price = soup.find_all(class_=('prods_price'), limit=5)
-    # Loops through all the products and formats pricing
-    for price in price:
-        price = price.text
-        price = " ".join(price.split())
-        print(f"{brand}: {model} - {price}")
+#     Grabs all prices on page - change "limit" to set how many prices you grab.
+    prices = soup.find_all(class_=('prods_price'), limit=5)
+
+    try:
+        #     This formats the prices to numbers in order to use them as values
+        price_list = [int((price.text).replace('£', '').replace(',', ''))
+                      for price in prices]
+        print(f'{brand}: {model} - Price List: {(price_list)}')
+# This gives us our average market value based on watchfinder
+
+        def Average(lst):
+            average = sum(lst) / len(lst)
+            return int(average)
+        print(f'Average Market Price: £{Average(price_list)}')
+        print('')
+#     This checks errors on oos or presale watches
+    except:
+        print(f'{brand}: {model} - Is not in stock/wrong model.')
+        print('')
 
 
 print('Watchfinder Collection Tracker by Matt Casey')
-print('Currently Searching for Models:')
-print(watchList)
+print(f'You currently have {len(watchList)} watches in your collection.')
 print('')
 watchTracker()
